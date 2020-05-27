@@ -537,11 +537,11 @@ main {
     width: 100vw;
     height: 100vh;
     z-index: 990;
-    background-color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 .modal__content {
-    border: 32px solid #00addc;
+    border: 32px solid #006d8b;
     position: relative;
 	min-width: 600px;
     max-width: 800px;
