@@ -19,6 +19,8 @@ const tvShowsHead = document.querySelector('.tv-shows__head');
 const posterWrapper = document.querySelector('.poster__wrapper');
 const modalContent = document.querySelector('.modal__content');
 const pagination = document.querySelector('.pagination');
+const trailer = document.getElementById('trailer');
+const headTrailer = document.getElementById('headTrailer');
 
 const loading = document.createElement('div');
 loading.className = 'loading';
@@ -66,6 +68,10 @@ const DBService = class {
 	getToday = () => this.getData(`${this.SERVER}/tv/airing_today?api_key=${this.API_KEY}&language=ru-RU`);
 
 	getWeek = () => this.getData(`${this.SERVER}/tv/on_the_air?api_key=${this.API_KEY}&language=ru-RU`);
+
+	getVideo = id => {
+		return this.getData(`${this.SERVER}/tv/${id}/videos?api_key=${this.API_KEY}&language=ru-RU`);
+	}
 };
 
 const dbService = new DBService();
@@ -208,7 +214,8 @@ tvShowsList.addEventListener('click', event => {
 				genres,
 				vote_average: voteAverage,
 				overview,
-				homepage }) => {
+				homepage,
+				id }) => {
 					if (posterPath) {
 						tvCardImg.src = IMG_URL + posterPath;
 						tvCardImg.alt = title;
@@ -230,6 +237,31 @@ tvShowsList.addEventListener('click', event => {
 				rating.textContent = voteAverage;
 				description.textContent = overview;
 				modalLink.href = homepage;
+				return id;
+			})
+			.then(dbService.getVideo)
+			.then(response => {
+				headTrailer.classList.add('hide');
+				trailer.textContent = '';
+				if(response.results.length) {
+					response.results.forEach(item => {
+						headTrailer.classList.remove('hide');
+						const trailerItem = document.createElement('li');
+						console.log(response);
+						
+						trailerItem.innerHTML = `
+							<iframe 
+								width="500" 
+								height="305" 
+								src="https://www.youtube.com/embed/${item.key}" 
+								frameborder="0" 
+								allowfullscreen>
+							</iframe>
+							<h4>${item.name}</h4>
+							`;
+						trailer.append(trailerItem);
+					})
+				};
 			})
 			.then(() => {
 				document.body.style.overflow = 'hidden';
